@@ -75,30 +75,37 @@ app.MapGet("/users/{id}", ([FromServices] BangazonDbContext db, int id) =>
   return Results.Ok(user);
 });
 
-// app.MapPost("/users", (BangazonDbContext db, User user) =>
-// {
-//  user.Id = user.Max(u => u.Id) + 1;
-//  user.Add(user);
+app.MapPost("/users", ([FromServices] BangazonDbContext db, User user) =>
+{
+ user.Id = db.User.Max(u => u.Id) + 1;
+ db.User.Add(user);
+ db.SaveChanges();
 
-//  return Results.Ok(user);
-// });
+ return Results.Ok(user);
+});
 
-// app.MapPut("/users/{id}", (int id, Users user) =>
-// {
-// Users userToUpdate = users.FirstOrDefault(u => u.Id == id);
-// int userIndex = users.IndexOf(userToUpdate);
+app.MapPut("/users/{id}", ([FromServices] BangazonDbContext db, int id, User user) =>
+{
+    User userToUpdate = db.User.FirstOrDefault(u => u.Id == id);
 
-// if (userToUpdate == null)
-//     {
-//         return Results.NotFound();
-//     }
-//     if (id != user.Id)
-//     {
-//         return Results.BadRequest();
-//     }
-//     users[userIndex] = user;
-//     return Results.Ok(userToUpdate);
-// });
+    if (userToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    if (id != user.Id)
+    {
+        return Results.BadRequest();
+    }
+
+    // Update the user properties
+    userToUpdate.Name = user.Name;
+    userToUpdate.Email = user.Email;
+    userToUpdate.Password = user.Password;
+
+    db.SaveChanges();
+
+    return Results.Ok(userToUpdate);
+});
 
 
 // // Orders
