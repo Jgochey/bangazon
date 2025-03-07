@@ -195,15 +195,15 @@ app.MapGet("/products/recent", ([FromServices] BangazonDbContext db) =>
 });
 
 
-// app.MapGet("/products/{id}", (int id) =>
-// {
-//   Products product = products.FirstOrDefault(u => u.Id == id);
-//   if (product == null)
-//   {
-//     return Results.NotFound();
-//   }
-//   return Results.Ok(product);
-// });
+app.MapGet("/products/{id}", ([FromServices] BangazonDbContext db, int id) =>
+{
+  Product product = db.Product.FirstOrDefault(u => u.Id == id);
+  if (product == null)
+  {
+    return Results.NotFound();
+  }
+  return Results.Ok(product);
+});
 
 // // Get products by User Id
 // app.MapGet("/products/seller/{id}", (int id) =>
