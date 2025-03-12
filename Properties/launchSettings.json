@@ -4,7 +4,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:5277;http://localhost:5200;http://localhost:3000",
+      "applicationUrl": "https://localhost:5277;http://localhost:5200;http://localhost:3000;https://bangazon-85fe8-default-rtdb.firebaseio.com",
       "sslPort": 44306
     }
   },
@@ -14,7 +14,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5277",
+      "applicationUrl": "http://localhost:5277;https://bangazon-85fe8-default-rtdb.firebaseio.com",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -24,7 +24,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:5277;http://localhost:5200;http://localhost:3000",
+      "applicationUrl": "https://localhost:5277;http://localhost:5200;http://localhost:3000;https://bangazon-85fe8-default-rtdb.firebaseio.com",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

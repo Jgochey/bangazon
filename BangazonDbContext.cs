@@ -30,7 +30,10 @@ public class BangazonDbContext : DbContext
     modelBuilder.Entity<Category>().HasData(new Category[]
     {
         new Category { Id = 1, Name = "Technology", ProductCount = 0 },
-        new Category { Id = 2, Name = "Health", ProductCount = 0 }
+        new Category { Id = 2, Name = "Health", ProductCount = 0 },
+        new Category { Id = 3, Name = "Home", ProductCount = 0 },
+        new Category { Id = 4, Name = "Automotive", ProductCount = 0 },
+        new Category { Id = 5, Name = "Clothing", ProductCount = 0 },
 
     });
 
@@ -69,7 +72,7 @@ public class BangazonDbContext : DbContext
         new Product { Id = 9, Title = "Webcam", Description = "A webcam", PricePerUnit = 49.99m, UnitsAvailable = 10, SellerId = 1, CategoryId = 1 },
         new Product { Id = 10, Title = "Microphone", Description = "A microphone", PricePerUnit = 49.99m, UnitsAvailable = 10, SellerId = 1, CategoryId = 1 },
         new Product { Id = 11, Title = "Watch", Description = "A wristwatch", PricePerUnit = 49.99m, UnitsAvailable = 50, SellerId = 1, CategoryId = 1 },
-        new Product { Id = 12, Title = "Car", Description = "An entire car, yes.", PricePerUnit = 300000.99m, UnitsAvailable = 50, SellerId = 1, CategoryId = 1 },
+        new Product { Id = 12, Title = "Car", Description = "An entire car, yes.", PricePerUnit = 300000.99m, UnitsAvailable = 50, SellerId = 1, CategoryId = 4 },
         new Product { Id = 13, Title = "Blender", Description = "A blender", PricePerUnit = 50.99m, UnitsAvailable = 100, SellerId = 1, CategoryId = 1 },
         new Product { Id = 14, Title = "Treadmill", Description = "A treadmill", PricePerUnit = 499.99m, UnitsAvailable = 10, SellerId = 1, CategoryId = 1 },
 
@@ -83,24 +86,22 @@ public class BangazonDbContext : DbContext
         new Product { Id = 22, Title = "Jump Rope", Description = "A jump rope", PricePerUnit = 9.99m, UnitsAvailable = 10, SellerId = 2, CategoryId = 2 },
         new Product { Id = 23, Title = "Foam Roller", Description = "A foam roller", PricePerUnit = 19.99m, UnitsAvailable = 10, SellerId = 2, CategoryId = 2 },
         new Product { Id = 24, Title = "Water Bottle", Description = "A water bottle", PricePerUnit = 9.99m, UnitsAvailable = 50, SellerId = 2, CategoryId = 2 },
-        new Product { Id = 25, Title = "Tennis Shoes", Description = "A pair of tennis shoes", PricePerUnit = 49.99m, UnitsAvailable = 10, SellerId = 2, CategoryId = 2 },
-        new Product { Id = 26, Title = "A TEST ITEM", Description = "Pickup dry cleaning on Thursday", PricePerUnit = 19.99m, UnitsAvailable = 10, SellerId = 2, CategoryId = 2 },
+        new Product { Id = 25, Title = "Tennis Shoes", Description = "A pair of tennis shoes", PricePerUnit = 49.99m, UnitsAvailable = 10, SellerId = 2, CategoryId = 5 },
+        new Product { Id = 26, Title = "A TEST ITEM", Description = "Pickup dry cleaning on Thursday", PricePerUnit = 19.99m, UnitsAvailable = 10, SellerId = 2, CategoryId = 3 },
     
   });
 
-      modelBuilder.Entity<Profile>().HasData(new Profile[]
-    {
-      new Profile { Id = 1, UserId = 1, FirstName = "John", LastName = "Doe", Email = "johndoe@example.com", Address = "123 Main St", Phone = "555-555-5555", Picture = "https://example.com/johndoe.jpg" },
-      new Profile { Id = 2, UserId = 2, FirstName = "Jane", LastName = "Smith", Email = "janesmith@example.com", Address = "456 Elm St", Phone = "555-555-5555", Picture = "https://example.com/janesmith.jpg" }
+        modelBuilder.Entity<Profile>().HasData(new Profile[]
+        {
+            new Profile { Id = 1, UserId = 1, FirstName = "John", LastName = "Doe", Email = "johndoe@example.com", Address = "123 Main St", Phone = "555-555-5555", Picture = "https://example.com/johndoe.jpg" },
+            new Profile { Id = 2, UserId = 2, FirstName = "Jane", LastName = "Smith", Email = "janesmith@example.com", Address = "456 Elm St", Phone = "555-555-5555", Picture = "https://example.com/janesmith.jpg" }
+        });
 
-    });
-
-    modelBuilder.Entity<User>().HasData(new User[]
-    {
-        new User { Id = 1, Name = "John", Email = "john.doe@example.com", Password = "password123"},
-        new User { Id = 2, Name = "Jane", Email = "jane.smith@example.com", Password = "123password"}
-
-    });
+        modelBuilder.Entity<User>().HasData(new User[]
+        {
+            new User { Id = 1, Name = "John", Email = "john.doe@example.com", Password = "password123", Uid = "1aBcD4EfGhIjKlMnOpQrStUvWxYz", IsRegistered = true },
+            new User { Id = 2, Name = "Jane", Email = "jane.smith@example.com", Password = "123password", Uid = "2bCdE5FgHiJkLmNoPqRsTuVwXyZa", IsRegistered = true }
+        });
 
     // modelBuilder.Entity<History>().HasData(new History[]
     // {
