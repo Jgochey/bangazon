@@ -11,4 +11,9 @@ public class User
   public string Password { get; set; }
 
   public string Email { get; set; }
+
+// This is the unique identifier for the user in Firebase
+  public string Uid { get; set; }
+
+  public bool IsRegistered { get; set; }
 }

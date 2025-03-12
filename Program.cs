@@ -27,21 +27,33 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add CORS policy
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowAll",
+//         builder =>
+//         {
+//             builder.AllowAnyOrigin()
+//                    .AllowAnyMethod()
+//                    .AllowAnyHeader();
+//         });
+// });
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 });
 
 var app = builder.Build();
 
 // Use CORS policy
-app.UseCors("AllowAll");
+// app.UseCors("AllowAll");
+app.UseCors();
 
 
 // var app = builder.Build();
@@ -75,14 +87,33 @@ app.MapGet("/users/{id}", ([FromServices] BangazonDbContext db, int id) =>
   return Results.Ok(user);
 });
 
-app.MapPost("/users", ([FromServices] BangazonDbContext db, User user) =>
+// Get a specific user by joining the user and product tables. The user should be retrieved from the product by the seller id.
+app.MapGet("/users/{id}/byproduct", ([FromServices] BangazonDbContext db, int id) =>
 {
- user.Id = db.User.Max(u => u.Id) + 1;
- db.User.Add(user);
- db.SaveChanges();
+    var product = db.Product.FirstOrDefault(p => p.Id == id);
+    if (product == null)
+    {
+        return Results.NotFound();
+    }
 
- return Results.Ok(user);
+    var user = db.User.FirstOrDefault(u => u.Id == product.SellerId);
+    if (user == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(user);
 });
+
+// app.MapPost("/users", ([FromServices] BangazonDbContext db, User user) =>
+// {
+//  user.Id = db.User.Max(u => u.Id) + 1;
+//  db.User.Add(user);
+//  db.SaveChanges();
+
+//  return Results.Ok(user);
+// });
+
 
 app.MapPut("/users/{id}", ([FromServices] BangazonDbContext db, int id, User user) =>
 {
@@ -101,10 +132,55 @@ app.MapPut("/users/{id}", ([FromServices] BangazonDbContext db, int id, User use
     userToUpdate.Name = user.Name;
     userToUpdate.Email = user.Email;
     userToUpdate.Password = user.Password;
+    userToUpdate.Uid = user.Uid;
+    userToUpdate.IsRegistered = true;
 
     db.SaveChanges();
 
     return Results.Ok(userToUpdate);
+});
+
+ app.MapPost("/checkuser", ([FromServices] BangazonDbContext db, string uid) =>
+        {
+            User? user = db.User.FirstOrDefault(u => u.Uid == uid);
+
+            if (user == null)
+            {
+                return Results.NotFound("User does not have an account.");
+            }
+
+            return Results.Ok(user);
+        });
+
+app.MapPost("/users", ([FromServices] BangazonDbContext db, User newUser) =>
+{
+    if (db.User.Any(u => u.Id == newUser.Id))
+    {
+        return Results.BadRequest("User is already registered");
+    }
+
+    User addUser = new User
+    {
+        Name = newUser.Name,
+        Email = newUser.Email,
+        Password = newUser.Password,
+        Uid = newUser.Uid,
+        IsRegistered = true
+    };
+
+    db.User.Add(addUser);
+    db.SaveChanges();
+    return Results.Created("/users", addUser);
+});
+
+app.MapDelete("/users/{id}", ([FromServices] BangazonDbContext db, int id) =>
+{
+    User user = db.User.FirstOrDefault(u => u.Id == id);
+
+    db.User.Remove(user);
+    db.SaveChanges();
+
+    return Results.Ok(user);
 });
 
 
@@ -206,11 +282,43 @@ app.MapGet("/products/{id}", ([FromServices] BangazonDbContext db, int id) =>
 });
 
 // // Get products by User Id
-// app.MapGet("/products/seller/{id}", (int id) =>
-// {
-//   return Results.Ok(products.Where(p => p.SellerId == id));
-// });
+app.MapGet("/products/seller/{id}", ([FromServices] BangazonDbContext db, int id) =>
+{
+  return Results.Ok(db.Product.Where(p => p.SellerId == id));
 
+});
+
+app.MapPost("/products", ([FromServices] BangazonDbContext db, Product product) =>
+{
+product.Id = db.Product.Max(p => p.Id) + 1;
+ db.Product.Add(product);
+ db.SaveChanges();
+
+ return Results.Ok(product);
+});
+
+app.MapPut("/products/{id}", ([FromServices] BangazonDbContext db, int id, Product product) =>
+{
+    Product productToUpdate = db.Product.FirstOrDefault(u => u.Id == id);
+
+    if (productToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    if (id != product.Id)
+    {
+        return Results.BadRequest();
+    }
+
+    // Update the product properties
+    productToUpdate.Title = product.Title;
+    productToUpdate.Description = product.Description;
+    productToUpdate.PricePerUnit = product.PricePerUnit;
+
+    db.SaveChanges();
+
+    return Results.Ok(productToUpdate);
+});
 
 // // Search for Products by title, even a partial match should return results.
 // app.MapGet("/products/search/{title}", (string title) =>
@@ -221,30 +329,8 @@ app.MapGet("/products/{id}", ([FromServices] BangazonDbContext db, int id) =>
 // });
 
 
-// app.MapPost("/products", (Products product) =>
-// {
-//  product.Id = products.Max(st => st.Id) + 1;
-//  products.Add(product);
-
-//  return Results.Ok(product);
-// });
 
 
-// app.MapPut("/products/{id}", (int id, Products product) => {
-// Products productToUpdate = products.FirstOrDefault(u => u.Id == id);
-// int productIndex = products.IndexOf(productToUpdate);
-
-// if (productToUpdate == null)
-//     {
-//         return Results.NotFound();
-//     }
-//     if (id != product.Id)
-//     {
-//         return Results.BadRequest();
-//     }
-//     products[productIndex] = product;
-//     return Results.Ok(productToUpdate);
-// });
 
 
 // // Profiles
@@ -280,10 +366,10 @@ app.MapGet("/products/{id}", ([FromServices] BangazonDbContext db, int id) =>
 
 
 // // Categories
-// app.MapGet("/categories", () =>
-// {
-//     return Results.Ok(categories);
-// });
+app.MapGet("/categories", ([FromServices] BangazonDbContext db) =>
+{
+    return Results.Ok(db.Category.ToList());
+});
 
 // app.MapPost("/categories", (Categories category) =>
 // {
