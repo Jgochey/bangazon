@@ -26,18 +26,6 @@ builder.Services.Configure<MvcJsonOptions>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add CORS policy
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy("AllowAll",
-//         builder =>
-//         {
-//             builder.AllowAnyOrigin()
-//                    .AllowAnyMethod()
-//                    .AllowAnyHeader();
-//         });
-// });
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -54,12 +42,6 @@ var app = builder.Build();
 // Use CORS policy
 // app.UseCors("AllowAll");
 app.UseCors();
-
-
-// var app = builder.Build();
-
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) 
@@ -104,16 +86,6 @@ app.MapGet("/users/{id}/byproduct", ([FromServices] BangazonDbContext db, int id
 
     return Results.Ok(user);
 });
-
-// app.MapPost("/users", ([FromServices] BangazonDbContext db, User user) =>
-// {
-//  user.Id = db.User.Max(u => u.Id) + 1;
-//  db.User.Add(user);
-//  db.SaveChanges();
-
-//  return Results.Ok(user);
-// });
-
 
 app.MapPut("/users/{id}", ([FromServices] BangazonDbContext db, int id, User user) =>
 {
@@ -183,80 +155,6 @@ app.MapDelete("/users/{id}", ([FromServices] BangazonDbContext db, int id) =>
     return Results.Ok(user);
 });
 
-
-// // Orders
-// app.MapGet("/orders", () =>
-// {
-//     return Results.Ok(orders);
-// });
-
-// app.MapPost("/orders", (Orders order) =>
-// {
-//  order.Id = orders.Max(o => o.Id) + 1;
-//  orders.Add(order);
-
-//  return Results.Ok(order);
-// });
-
-// app.MapPut("/orders/{id}", (int id, Orders order) =>
-// {
-// Orders orderToUpdate = orders.FirstOrDefault(u => u.Id == id);
-// int orderIndex = orders.IndexOf(orderToUpdate);
-
-// if (orderToUpdate == null)
-//     {
-//         return Results.NotFound();
-//     }
-//     if (id != order.Id)
-//     {
-//         return Results.BadRequest();
-//     }
-//     orders[orderIndex] = order;
-//     return Results.Ok(orderToUpdate);
-// });
-
-
-// // OrderItems
-// app.MapGet("/orderitems", () =>
-// {
-//     return Results.Ok(orderitems);
-// });
-
-// app.MapPost("/orderitems", (OrderItems orderitem) =>
-// {
-//  orderitem.Id = orderitems.Max(o => o.Id) + 1;
-//  orderitems.Add(orderitem);
-
-//  return Results.Ok(orderitem);
-// });
-
-// app.MapPut("/orderitems/{id}", (int id, OrderItems orderitem) =>
-// {
-// OrderItems orderItemToUpdate = orderitems.FirstOrDefault(u => u.Id == id);
-// int orderItemIndex = orderitems.IndexOf(orderItemToUpdate);
-
-// if (orderItemToUpdate == null)
-//     {
-//         return Results.NotFound();
-//     }
-//     if (id != orderitem.Id)
-//     {
-//         return Results.BadRequest();
-//     }
-//     orderitems[orderItemIndex] = orderitem;
-//     return Results.Ok(orderItemToUpdate);
-// });
-
-// app.MapDelete("/orderitems/{id}", (int id) =>
-// {
-//     OrderItems item = orderitems.FirstOrDefault(st => st.Id == id);
-
-//     orderitems.Remove(item);
-
-//     return Results.Ok(item);
-// });
-
-
 // // Products
 app.MapGet("/products", ([FromServices] BangazonDbContext db) =>
 {
@@ -320,116 +218,20 @@ app.MapPut("/products/{id}", ([FromServices] BangazonDbContext db, int id, Produ
     return Results.Ok(productToUpdate);
 });
 
-// // Search for Products by title, even a partial match should return results.
-// app.MapGet("/products/search/{title}", (string title) =>
-// {
-//   var search = title.ToLower();
+app.MapDelete("/products/{id}", ([FromServices] BangazonDbContext db, int id) =>
+{
+    Product product = db.Product.FirstOrDefault(u => u.Id == id);
 
-//   return Results.Ok(products.Where(p => p.Title.ToLower().Contains(search) || p.Description.ToLower().Contains(search)));
-// });
+    db.Product.Remove(product);
+    db.SaveChanges();
 
-
-
-
-
-
-// // Profiles
-// app.MapGet("/profiles", () =>
-// {
-//     return Results.Ok(profiles);
-// });
-
-// app.MapPost("/profiles", (Profile profile) =>
-// {
-//  profile.Id = profiles.Max(st => st.Id) + 1;
-//  profiles.Add(profile);
-
-//  return Results.Ok(profile);
-// });
-
-// app.MapPut("/profiles/{id}", (int id, Profile profile) =>
-// {
-// Profile profileToUpdate = profiles.FirstOrDefault(u => u.Id == id);
-// int profileIndex = profiles.IndexOf(profileToUpdate);
-
-// if (profileToUpdate == null)
-//     {
-//         return Results.NotFound();
-//     }
-//     if (id != profile.Id)
-//     {
-//         return Results.BadRequest();
-//     }
-//     profiles[profileIndex] = profile;
-//     return Results.Ok(profileToUpdate);
-// });
-
+    return Results.Ok(product);
+});
 
 // // Categories
 app.MapGet("/categories", ([FromServices] BangazonDbContext db) =>
 {
     return Results.Ok(db.Category.ToList());
 });
-
-// app.MapPost("/categories", (Categories category) =>
-// {
-//  category.Id = categories.Max(st => st.Id) + 1;
-//  categories.Add(category);
-
-//  return Results.Ok(category);
-// });
-
-// app.MapPut("/categories/{id}", (int id, Categories category) => {
-// Categories categoryToUpdate = categories.FirstOrDefault(u => u.Id == id);
-// int categoryIndex = categories.IndexOf(categoryToUpdate);
-
-// if (categoryToUpdate == null)
-// {
-//     return Results.NotFound();
-// }
-// if (id != category.Id)
-// {
-//     return Results.BadRequest();
-// }
-// categories[categoryIndex] = category;
-// return Results.Ok(categoryToUpdate);
-// });
-
-
-// // Payments
-// app.MapGet("/payments", () =>
-// {
-//     return Results.Ok(payments);
-// });
-
-// app.MapPost("/payments", (Payment payment) =>
-// {
-//  payment.Id = payments.Max(st => st.Id) + 1;
-//  payments.Add(payment);
-
-//  return Results.Ok(payment);
-// });
-
-// app.MapPut("/payments/{id}", (int id, Payment payment) =>
-// {
-// Payment paymentToUpdate = payments.FirstOrDefault(u => u.Id == id);
-// int paymentIndex = payments.IndexOf(paymentToUpdate);
-
-// if (paymentToUpdate == null)
-//     {
-//         return Results.NotFound();
-//     }
-//     if (id != payment.Id)
-//     {
-//         return Results.BadRequest();
-//     }
-//     payments[paymentIndex] = payment;
-//     return Results.Ok(paymentToUpdate);
-// });
-
-
-// History
-// SellerDashboard
-
 
 app.Run();
